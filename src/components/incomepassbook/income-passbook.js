@@ -472,9 +472,12 @@ const TransactionTable = ({ transactions }) => {
 };
 
 // Main Income Passbook Component
-const IncomePassbook = ({ userId = '34' }) => {
+const IncomePassbook = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+    // Get user ID from sessionStorage
+    const [userId, setUserId] = useState('');
 
     // State variables
     const [fromDate, setFromDate] = useState(startOfMonth(new Date()));
@@ -487,8 +490,27 @@ const IncomePassbook = ({ userId = '34' }) => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
+    // Get user ID from sessionStorage on component mount
+    useEffect(() => {
+        const storedUserId = sessionStorage.getItem('id');
+        console.log('Retrieved user ID from sessionStorage:', storedUserId);
+        
+        if (storedUserId) {
+            setUserId(storedUserId);
+        } else {
+            setError('User ID not found. Please login again.');
+            console.error('User ID not found in sessionStorage');
+        }
+    }, []);
+
     // API Call Function
     const fetchIncomePassbook = async () => {
+        // Check if user ID is available
+        if (!userId) {
+            console.warn('User ID not available, skipping API call');
+            return;
+        }
+
         try {
             setLoading(true);
             setError('');
@@ -559,19 +581,23 @@ const IncomePassbook = ({ userId = '34' }) => {
         }
     };
 
-    // Load transactions when component mounts
+    // Load transactions when component mounts or user ID changes
     useEffect(() => {
-        fetchIncomePassbook();
-    }, []);
+        if (userId) {
+            fetchIncomePassbook();
+        }
+    }, [userId]);
 
-    // Reload when filters or dates change
+    // Reload when filters, dates, or user ID changes
     useEffect(() => {
+        if (!userId) return;
+
         const timer = setTimeout(() => {
             fetchIncomePassbook();
-        }); // Debounce to avoid too many API calls
+        }, 500); // Debounce to avoid too many API calls
 
         return () => clearTimeout(timer);
-    }, [filter, fromDate, toDate]);
+    }, [filter, fromDate, toDate, userId]);
 
     // Handle filter change
     const handleFilterChange = (event) => {
@@ -599,7 +625,6 @@ const IncomePassbook = ({ userId = '34' }) => {
         );
     }, [transactions, searchTerm]);
 
-
     const handleExport = () => {
         // 1. Convert transactions to JSON rows
         const worksheetData = filteredTransactions.map(txn => ({
@@ -623,7 +648,6 @@ const IncomePassbook = ({ userId = '34' }) => {
         // 3. Find last row
         const lastRow = worksheetData.length + 1; // +1 for header row
 
-
         // 5. Create workbook
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "IncomePassbook");
@@ -636,12 +660,37 @@ const IncomePassbook = ({ userId = '34' }) => {
         setSuccess("Data exported successfully!");
     };
 
-
+    // Show loading if user ID is not yet retrieved
+    if (!userId && !error) {
+        return (
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    minHeight: '50vh',
+                    backgroundColor: '#f8f9fa'
+                }}>
+                    <CircularProgress />
+                    <Typography variant="h6" sx={{ ml: 2 }}>
+                        Loading user information...
+                    </Typography>
+                </Box>
+            </LocalizationProvider>
+        );
+    }
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Box sx={{ flexGrow: 1, backgroundColor: '#f8f9fa', minHeight: '100vh', py: 2 }}>
                 <Container maxWidth="xl">
+                    {/* User Info */}
+                    <Box sx={{ mb: 3, p: 2, backgroundColor: 'white', borderRadius: 2, boxShadow: 1 }}>
+                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                            User ID: {userId}
+                        </Typography>
+                    </Box>
+
                     {/* Summary Cards */}
                     <SummaryCards totalAmount={totalAmount} />
 
