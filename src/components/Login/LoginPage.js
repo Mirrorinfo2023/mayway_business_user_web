@@ -1,8 +1,8 @@
-import { 
-  Box, 
-  Typography, 
-  Grid, 
-  useMediaQuery, 
+import {
+  Box,
+  Typography,
+  Grid,
+  useMediaQuery,
   useTheme,
   CircularProgress,
   Alert,
@@ -156,7 +156,7 @@ const getBanner = async (categoryId) => {
   try {
     const payload = { categoryId };
     const encryptedData = DataEncrypt(JSON.stringify(payload));
-    
+
     const response = await api.post('/api/banner/338876c40d469f2abe060d986593e12dfc9aa48c', {
       encReq: encryptedData
     }, {
@@ -167,7 +167,7 @@ const getBanner = async (categoryId) => {
     });
 
     let responseData;
-    
+
     if (typeof response.data === 'string' && response.data.startsWith('ey')) {
       responseData = DataDecrypt(response.data);
       responseData = typeof responseData === 'string' ? JSON.parse(responseData) : responseData;
@@ -179,7 +179,7 @@ const getBanner = async (categoryId) => {
     }
 
     return responseData;
-    
+
   } catch (error) {
     console.error('Get Banner API Error:', error);
     if (error.response) {
@@ -228,7 +228,14 @@ const BannerSection = ({ banners, currentIndex, onBannerChange, loading, error }
           }}
         >
           <BrandContainer>
-            <Box sx={{ mb: 3 }}>
+            <Box
+              sx={{
+                mb: 3,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <Image
                 src={AppLogo}
                 alt="Mayway Logo"
@@ -240,9 +247,10 @@ const BannerSection = ({ banners, currentIndex, onBannerChange, loading, error }
                 }}
               />
             </Box>
+
             <Typography
               variant="h4"
-              sx={{ 
+              sx={{
                 fontWeight: 'bold',
                 mb: 2,
                 textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
@@ -252,7 +260,7 @@ const BannerSection = ({ banners, currentIndex, onBannerChange, loading, error }
             </Typography>
             <Typography
               variant="h3"
-              sx={{ 
+              sx={{
                 fontWeight: 'bold',
                 textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
               }}
@@ -282,7 +290,7 @@ const BannerSection = ({ banners, currentIndex, onBannerChange, loading, error }
               console.error('Banner image failed to load');
             }}
           />
-          
+
           <BannerOverlay>
             <BrandContainer>
               <Box sx={{ mb: 3 }}>
@@ -298,7 +306,7 @@ const BannerSection = ({ banners, currentIndex, onBannerChange, loading, error }
               </Box>
               <Typography
                 variant="h4"
-                sx={{ 
+                sx={{
                   fontWeight: 'bold',
                   mb: 2,
                   textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
@@ -308,7 +316,7 @@ const BannerSection = ({ banners, currentIndex, onBannerChange, loading, error }
               </Typography>
               <Typography
                 variant="h3"
-                sx={{ 
+                sx={{
                   fontWeight: 'bold',
                   textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
                 }}
@@ -343,7 +351,7 @@ const LoginPage = () => {
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
@@ -354,9 +362,9 @@ const LoginPage = () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const response = await getBanner('login');
-        
+
         if (response.status === 200 && response.data && response.data.length > 0) {
           setBannerImages(response.data);
         } else {
@@ -424,7 +432,7 @@ const LoginPage = () => {
                     />
                     <Typography
                       variant="h6"
-                      sx={{ 
+                      sx={{
                         mt: 1,
                         fontWeight: 'bold',
                         background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
@@ -440,9 +448,9 @@ const LoginPage = () => {
 
                 {/* Error Alert */}
                 {error && bannerImages.length === 0 && !loading && (
-                  <Alert 
-                    severity="warning" 
-                    sx={{ 
+                  <Alert
+                    severity="warning"
+                    sx={{
                       mb: 3,
                       borderRadius: 2
                     }}
@@ -455,7 +463,7 @@ const LoginPage = () => {
                 <Box sx={{ textAlign: 'center', mb: 4 }}>
                   <Typography
                     variant={isMobile ? "h5" : "h4"}
-                    sx={{ 
+                    sx={{
                       fontWeight: 'bold',
                       mb: 1,
                       background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
@@ -467,8 +475,8 @@ const LoginPage = () => {
                     {showForgotPassword
                       ? "Forgot Password"
                       : showUnblock
-                      ? "Unblock User"
-                      : "Welcome Back!"}
+                        ? "Unblock User"
+                        : "Welcome Back!"}
                   </Typography>
 
                   <Typography
@@ -479,8 +487,8 @@ const LoginPage = () => {
                     {showForgotPassword
                       ? "Enter your credentials to reset password"
                       : showUnblock
-                      ? "Enter your username to unblock account"
-                      : "Please enter your credentials to login"}
+                        ? "Enter your username to unblock account"
+                        : "Please enter your credentials to login"}
                   </Typography>
                 </Box>
 
@@ -500,8 +508,8 @@ const LoginPage = () => {
 
                 {/* Footer */}
                 <Box sx={{ textAlign: 'center' }}>
-                  <Typography 
-                    variant="body2" 
+                  <Typography
+                    variant="body2"
                     color="text.secondary"
                     sx={{ opacity: 0.8 }}
                   >
