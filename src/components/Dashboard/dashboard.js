@@ -34,8 +34,8 @@ import axios from 'axios';
 import { mt } from 'date-fns/locale';
 import API from "../../../utils/api"
 import { DataEncrypt, DataDecrypt } from "../../../utils/encryption"; // adjust path
-import WalletBalanceWidget from './wallet_ballance';
-import TodaysUpdates from '../Dashboard/User/todaysupdate';
+import WalletBalanceWidget from './wallet_balance';
+import TodaysUpdates from './User/todaysupdate';
 // Summary Cards Component
 const SummaryCards = ({ incomeStats }) => {
   const cards = [

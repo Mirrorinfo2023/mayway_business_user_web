@@ -15,6 +15,7 @@ import {
   useTheme,
   CircularProgress,
   Alert,
+  Pagination,
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -23,152 +24,100 @@ import {
   Refresh as RefreshIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
-
-// Static fallback data for team level details
-const STATIC_LEVEL_DATA = {
-  '0': { // My Team - Level wise data
-    1: [
-      { id: 1, name: 'Rajesh Kumar', mlmId: 'MLM001', userId: 'U001', joiningDate: '2024-01-15', plan: 'Starter Pack', mobile: '+919876543210', status: 'Active' },
-      { id: 2, name: 'Priya Sharma', mlmId: 'MLM002', userId: 'U002', joiningDate: '2024-01-20', plan: null, mobile: '+919876543211', status: 'Inactive' },
-      { id: 3, name: 'Amit Patel', mlmId: 'MLM003', userId: 'U003', joiningDate: '2024-02-01', plan: 'Business Pack', mobile: '+919876543212', status: 'Active' },
-    ],
-    2: [
-      { id: 4, name: 'Sneha Reddy', mlmId: 'MLM004', userId: 'U004', joiningDate: '2024-01-10', plan: 'Premium Pack', mobile: '+919876543213', status: 'Active' },
-      { id: 5, name: 'Vikram Singh', mlmId: 'MLM005', userId: 'U005', joiningDate: '2024-02-05', plan: null, mobile: '+919876543214', status: 'Inactive' },
-      { id: 6, name: 'Anjali Mehta', mlmId: 'MLM006', userId: 'U006', joiningDate: '2024-01-25', plan: 'Starter Pack', mobile: '+919876543215', status: 'Active' },
-      { id: 7, name: 'Rohit Verma', mlmId: 'MLM007', userId: 'U007', joiningDate: '2024-02-10', plan: 'Business Pack', mobile: '+919876543216', status: 'Active' },
-    ],
-    3: [
-      { id: 8, name: 'Kiran Desai', mlmId: 'MLM008', userId: 'U008', joiningDate: '2024-01-05', plan: 'Premium Pack', mobile: '+919876543217', status: 'Active' },
-      { id: 9, name: 'Sanjay Rao', mlmId: 'MLM009', userId: 'U009', joiningDate: '2024-02-15', plan: null, mobile: '+919876543218', status: 'Inactive' },
-    ]
-  },
-  '1': { // Hybrid Team
-    1: [
-      { id: 1, name: 'Mohan Das', mlmId: 'HYB001', userId: 'H001', joiningDate: '2024-01-12', plan: 'Hybrid Basic', mobile: '+919876543220', status: 'Active' },
-      { id: 2, name: 'Laxmi Nair', mlmId: 'HYB002', userId: 'H002', joiningDate: '2024-01-18', plan: 'Hybrid Pro', mobile: '+919876543221', status: 'Active' },
-    ],
-    2: [
-      { id: 3, name: 'Arun Joshi', mlmId: 'HYB003', userId: 'H003', joiningDate: '2024-02-02', plan: 'Hybrid Basic', mobile: '+919876543222', status: 'Active' },
-      { id: 4, name: 'Pooja Menon', mlmId: 'HYB004', userId: 'H004', joiningDate: '2024-01-28', plan: null, mobile: '+919876543223', status: 'Inactive' },
-    ]
-  },
-  '2': { // Booster Team
-    1: [
-      { id: 1, name: 'Deepak Roy', mlmId: 'BST001', userId: 'B001', joiningDate: '2024-01-20', plan: 'Booster Gold', mobile: '+919876543230', status: 'Active' },
-      { id: 2, name: 'Sunita Agarwal', mlmId: 'BST002', userId: 'B002', joiningDate: '2024-02-08', plan: 'Booster Silver', mobile: '+919876543231', status: 'Active' },
-    ]
-  },
-  '3': { // Prime A Team
-    1: [
-      { id: 1, name: 'Rahul Malhotra', mlmId: 'PMA001', userId: 'P001', joiningDate: '2024-01-08', plan: 'Prime Elite', mobile: '+919876543240', status: 'Active' },
-      { id: 2, name: 'Neha Gupta', mlmId: 'PMA002', userId: 'P002', joiningDate: '2024-01-22', plan: null, mobile: '+919876543241', status: 'Inactive' },
-      { id: 3, name: 'Alok Choudhary', mlmId: 'PMA003', userId: 'P003', joiningDate: '2024-02-12', plan: 'Prime Pro', mobile: '+919876543242', status: 'Active' },
-    ],
-    2: [
-      { id: 4, name: 'Swati Iyer', mlmId: 'PMA004', userId: 'P004', joiningDate: '2024-01-14', plan: 'Prime Elite', mobile: '+919876543243', status: 'Active' },
-      { id: 5, name: 'Karan Mehta', mlmId: 'PMA005', userId: 'P005', joiningDate: '2024-02-03', plan: null, mobile: '+919876543244', status: 'Inactive' },
-      { id: 6, name: 'Divya Nair', mlmId: 'PMA006', userId: 'P006', joiningDate: '2024-01-30', plan: 'Prime Pro', mobile: '+919876543245', status: 'Active' },
-    ]
-  },
-  '4': { // Active Team
-    1: [
-      { id: 1, name: 'Vishal Kumar', mlmId: 'ACT001', userId: 'A001', joiningDate: '2024-01-25', plan: 'Active Basic', mobile: '+919876543250', status: 'Active' },
-      { id: 2, name: 'Madhu Sharma', mlmId: 'ACT002', userId: 'A002', joiningDate: '2024-02-05', plan: 'Active Pro', mobile: '+919876543251', status: 'Active' },
-      { id: 3, name: 'Ramesh Patel', mlmId: 'ACT003', userId: 'A003', joiningDate: '2024-01-18', plan: 'Active Basic', mobile: '+919876543252', status: 'Active' },
-    ]
-  }
-};
-
-// Mock API Service
-const TeamService = {
-  getLevelTeamDetails: async (userId, level, primeId, page = 1) => {
-    try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Simulate API failure 30% of the time
-      if (Math.random() < 0.3) {
-        throw new Error('API Network Error');
-      }
-
-      // Return mock data based on planId and level
-      const planData = STATIC_LEVEL_DATA[primeId];
-      if (planData && planData[level]) {
-        return planData[level];
-      }
-      
-      // Return empty array if no data found
-      return [];
-    } catch (error) {
-      console.error('Error fetching level team details:', error);
-      throw error;
-    }
-  }
-};
+import api from '../../../../utils/api';
+import { DataEncrypt, DataDecrypt } from '../../../../utils/encryption';
 
 const TeamLevelDetailsScreen = () => {
   const theme = useTheme();
   const router = useRouter();
   const { planId, level } = router.query;
+
   const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
   const [error, setError] = useState(null);
-  const [usingFallback, setUsingFallback] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     if (planId && level) {
       loadTeamMembers();
     }
-  }, [planId, level]);
+  }, [planId, level, currentPage]);
 
-  const loadTeamMembers = async (useFallback = false) => {
+  const loadTeamMembers = async () => {
     try {
       setLoading(true);
       setError(null);
-      
-      if (useFallback) {
-        // Use static fallback data directly
-        const fallbackData = STATIC_LEVEL_DATA[planId]?.[level] || [];
-        setTeamMembers(fallbackData);
-        setUsingFallback(true);
-        return;
+
+      const userId = sessionStorage.getItem('id');
+      if (!userId) {
+        throw new Error('User ID not found. Please login again.');
       }
 
-      const userId = 'user123';
-      const members = await TeamService.getLevelTeamDetails(userId, level, planId);
-      setTeamMembers(members);
-      setUsingFallback(false);
+      const payload = {
+        user_id: userId,
+        level: parseInt(level),
+        page: currentPage,
+        teamType: parseInt(planId) || 1
+      };
+
+      console.log("Loading team members with payload:", payload);
+
+      const encReq = DataEncrypt(JSON.stringify(payload));
+      const response = await api.post('/api/refferal-report/65e1bce665c5b66ff4076e963488b62999b44c16', { encReq });
+
+      const decryptedData = DataDecrypt(response.data);
+
+      if (decryptedData.status === 200) {
+        const members = decryptedData.data || [];
+        setTeamMembers(members);
+
+        // Calculate total pages based on response (assuming 10 items per page)
+        if (members.length > 0) {
+          setTotalPages(Math.ceil(members.length / 10) || 1);
+        } else {
+          setTotalPages(1);
+        }
+
+        console.log("Team members loaded successfully:", members);
+      } else {
+        throw new Error(decryptedData.message || 'Failed to fetch team members');
+      }
     } catch (error) {
       console.error('Error loading team members:', error);
-      setError('Failed to load team members. Showing demo data.');
-      
-      // Fallback to static data
-      const fallbackData = STATIC_LEVEL_DATA[planId]?.[level] || [];
-      setTeamMembers(fallbackData);
-      setUsingFallback(true);
+      setError(error.message || 'Failed to load team members');
+      setTeamMembers([]);
     } finally {
       setLoading(false);
     }
   };
 
   const handleRetry = () => {
-    loadTeamMembers(false);
+    setCurrentPage(1);
+    loadTeamMembers();
+  };
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
   const filteredMembers = teamMembers.filter(member => {
-    if (filter === 'Active') return member.plan !== null;
-    if (filter === 'Inactive') return member.plan === null;
+    if (filter === 'Active') return member.plan !== null && member.plan !== undefined;
+    if (filter === 'Inactive') return !member.plan || member.plan === null;
     return true;
   });
 
   const handleCall = (phoneNumber) => {
-    window.open(`tel:${phoneNumber}`, '_self');
+    if (phoneNumber) {
+      window.open(`tel:${phoneNumber}`, '_self');
+    }
   };
 
   const handleWhatsApp = (phoneNumber) => {
-    window.open(`https://wa.me/${phoneNumber}`, '_blank');
+    if (phoneNumber) {
+      window.open(`https://wa.me/${phoneNumber}`, '_blank');
+    }
   };
 
   const handleBack = () => {
@@ -186,47 +135,95 @@ const TeamLevelDetailsScreen = () => {
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-IN');
+    } catch {
+      return dateString;
+    }
+  };
+
+  const getPlanName = (planString) => {
+    if (!planString) return null;
+    try {
+      // Extract first plan name from the comma-separated list
+      const firstPlan = planString.split(',')[0];
+      return firstPlan.split(' - ')[0] || 'Active Plan';
+    } catch {
+      return planString;
+    }
+  };
+
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-        <CircularProgress />
-        <Typography variant="body1" sx={{ ml: 2 }}>
-          Loading team members...
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh"
+        sx={{ background: 'linear-gradient(135deg, #FFF8DC 0%, #FFEBCD 100%)' }}
+      >
+        <CircularProgress sx={{ color: '#FFD700' }} />
+        <Typography variant="h6" sx={{ ml: 2, color: '#8B4513', fontWeight: 600 }}>
+          Loading Team Members...
         </Typography>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
-      <Container maxWidth="lg" sx={{ py: 2 }}>
+    <Box sx={{
+      background: 'linear-gradient(135deg, #FFF8DC 0%, #FFEBCD 100%)',
+      minHeight: '100vh',
+      py: 1
+    }}>
+      <Container sx={{ py: 1 }}>
         {/* Back Button and Retry */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Button 
+          <Button
             startIcon={<ArrowBackIcon />}
             onClick={handleBack}
-            variant="outlined"
+            variant="contained"
+            size="small"
+            sx={{
+              background: 'linear-gradient(135deg, #8B4513 0%, #A0522D 100%)',
+              color: 'white',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #A0522D 0%, #8B4513 100%)',
+              }
+            }}
           >
-            Back to Team
+            Back
           </Button>
-          
-          {usingFallback && (
-            <Button 
-              startIcon={<RefreshIcon />}
-              onClick={handleRetry}
-              variant="contained"
-              color="primary"
-            >
-              Retry API
-            </Button>
-          )}
+
+          <Button
+            startIcon={<RefreshIcon />}
+            onClick={handleRetry}
+            variant="contained"
+            size="small"
+            sx={{
+              background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+              color: '#8B4513',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #FFA500 0%, #FFD700 100%)',
+              }
+            }}
+          >
+            Refresh
+          </Button>
         </Box>
+
+
 
         {/* Error Alert */}
         {error && (
-          <Alert 
-            severity="warning" 
-            sx={{ mb: 3 }}
+          <Alert
+            severity="warning"
+            sx={{
+              mb: 2,
+              background: 'linear-gradient(135deg, #FFEBCD 0%, #FFF8DC 100%)',
+              color: '#8B4513',
+              border: '1px solid #FFD700',
+              py: 0
+            }}
             action={
               <Button color="inherit" size="small" onClick={handleRetry}>
                 RETRY
@@ -238,203 +235,281 @@ const TeamLevelDetailsScreen = () => {
         )}
 
         {/* Header */}
-        <Card sx={{ mb: 3, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-          <CardContent sx={{ p: 3, textAlign: 'center', position: 'relative' }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: 'white', mb: 1 }}>
+        <Card sx={{
+          mb: 2,
+          background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+          border: '2px solid #FFD700'
+        }}>
+          <CardContent sx={{ p: 2, textAlign: 'center' }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#8B4513', mb: 0.5 }}>
               Level {level} - {getPlanTitle()}
             </Typography>
-            <Typography variant="h6" sx={{ color: 'white', opacity: 0.9 }}>
-              Team Members Details
+            <Typography variant="body2" sx={{ color: '#8B4513', opacity: 0.9 }}>
+              Team Members
             </Typography>
-            {usingFallback && (
-              <Chip 
-                label="Demo Data" 
-                size="small" 
-                sx={{ 
-                  position: 'absolute',
-                  top: 16,
-                  right: 16,
-                  backgroundColor: 'rgba(255,255,255,0.2)', 
-                  color: 'white',
-                  fontWeight: 'bold'
-                }} 
-              />
-            )}
           </CardContent>
         </Card>
 
+
+
         {/* Filter Dropdown */}
         {(planId === "3" || planId === "0") && (
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h6" color="primary">
-              {filteredMembers.length} members found
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="body1" sx={{ color: '#8B4513', fontWeight: 600 }}>
+              {filteredMembers.length} members
             </Typography>
             <TextField
               select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
               size="small"
-              sx={{ minWidth: 120, bgcolor: 'white' }}
-              label="Filter Status"
+              sx={{
+                minWidth: 120,
+                bgcolor: 'white',
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: '#FFD700',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#FFA500',
+                  },
+                }
+              }}
+              label="Filter"
             >
-              <MenuItem value="All">All Members</MenuItem>
-              <MenuItem value="Active">Active Only</MenuItem>
-              <MenuItem value="Inactive">Inactive Only</MenuItem>
+              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="Active">Active</MenuItem>
+              <MenuItem value="Inactive">Inactive</MenuItem>
             </TextField>
           </Box>
         )}
 
         {/* Team Members List */}
         {filteredMembers.length === 0 ? (
-          <Card sx={{ p: 4, textAlign: 'center' }}>
-            <Typography variant="h6" color="text.secondary">
+          <Card sx={{
+            p: 3,
+            textAlign: 'center',
+            background: 'linear-gradient(135deg, #FFF8DC 0%, #FFEBCD 100%)',
+            border: '1px solid #FFD700'
+          }}>
+            <Typography variant="body1" sx={{ color: '#8B4513' }}>
               No team members found
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              {filter !== 'All' ? `No ${filter.toLowerCase()} members in level ${level}` : `No members found in level ${level}`}
+            <Typography variant="body2" sx={{ color: '#8B4513', mt: 0.5 }}>
+              {filter !== 'All' ? `No ${filter.toLowerCase()} members in level ${level}` : `No members in level ${level}`}
             </Typography>
-            {usingFallback && (
-              <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
-                This is sample data. Real data will appear when API is connected.
-              </Typography>
-            )}
           </Card>
         ) : (
-          <Stack spacing={2}>
-            {filteredMembers.map((member, index) => (
-              <Card key={member.id || index} sx={{ p: 2, position: 'relative' }}>
-                {usingFallback && (
-                  <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
-                    <Chip label="Sample" size="small" color="warning" />
-                  </Box>
-                )}
-                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                  {/* Status Indicator */}
-                  <Box sx={{ 
-                    width: 12, 
-                    height: 12, 
-                    borderRadius: '50%', 
-                    bgcolor: member.plan ? 'success.main' : 'error.main',
-                    mt: 1.5,
-                    flexShrink: 0
-                  }} />
-                  
-                  {/* Member Avatar and Details */}
-                  <Avatar
-                    sx={{
-                      width: 50,
-                      height: 50,
-                      bgcolor: member.plan ? theme.palette.primary.main : theme.palette.grey[400],
-                      fontSize: '1rem',
-                      fontWeight: 'bold'
-                    }}
-                  >
-                    {member.name?.charAt(0) || 'U'}
-                  </Avatar>
-
-                  {/* Member Details */}
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                      {member.name || 'Unknown User'}
-                    </Typography>
-                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        <strong>User ID:</strong> {member.mlmId || member.userId || 'N/A'}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        <strong>DOJ:</strong> {member.joiningDate || 'N/A'}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        <strong>Plan:</strong> {member.plan || 'Not Active'}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        <strong>Mobile:</strong> {member.mobile || 'N/A'}
-                      </Typography>
+          <Stack spacing={1}>
+            {filteredMembers.map((member, index) => {
+              const hasPlan = !!getPlanName(member.plan);
+              return (
+                <Card key={member.user_id || index} sx={{
+                  p: 1.5,
+                  background: 'linear-gradient(135deg, #FFF8DC 0%, #FFEBCD 100%)',
+                  border: '1px solid #FFD700'
+                }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    {/* Status Indicator and Avatar */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Box sx={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
+                        bgcolor: hasPlan ? 'green' : 'orange',
+                        flexShrink: 0
+                      }} />
+                      <Avatar
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+                          fontSize: '0.9rem',
+                          fontWeight: 'bold',
+                          color: '#8B4513'
+                        }}
+                      >
+                        {member.name?.charAt(0) || 'U'}
+                      </Avatar>
                     </Box>
-                    <Box sx={{ mt: 1 }}>
-                      <Chip 
-                        label={member.plan ? 'Active' : 'Inactive'} 
+
+                    {/* Member Details - Single Row */}
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#8B4513', mb: 0.5 }}>
+                        {member.name || 'Unknown User'}
+                      </Typography>
+                      <Box sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 1.5,
+                        alignItems: 'center'
+                      }}>
+                        <Typography variant="caption" sx={{ color: '#8B4513', fontWeight: 500 }}>
+                          <strong>ID:</strong> {member.mlm_id || 'N/A'}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#8B4513' }}>
+                          <strong>Joining Date:</strong> {formatDate(member.joining_date)}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#8B4513' }}>
+                          <strong>Mobile:</strong> {member.mobile || 'N/A'}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#8B4513' }}>
+                          <strong>Plan:</strong> {getPlanName(member.plan) || 'None'}
+                        </Typography>
+                        <Chip
+                          label={hasPlan ? 'Active' : 'Inactive'}
+                          size="small"
+                          sx={{
+                            height: 20,
+                            fontSize: '0.7rem',
+                            backgroundColor: hasPlan ? '#4CAF50' : '#FF9800',
+                            color: 'white',
+                            fontWeight: 'bold'
+                          }}
+                        />
+                      </Box>
+                    </Box>
+
+                    {/* Action Buttons */}
+                    <Box sx={{ display: 'flex', gap: 0.5, flexShrink: 0 }}>
+                      <IconButton
                         size="small"
-                        color={member.plan ? 'success' : 'default'}
-                        variant={member.plan ? 'filled' : 'outlined'}
-                      />
+                        onClick={() => handleCall(member.mobile)}
+                        sx={{
+                          border: 1,
+                          borderColor: '#8B4513',
+                          color: '#8B4513',
+                          '&:hover': {
+                            backgroundColor: '#8B4513',
+                            color: 'white'
+                          }
+                        }}
+                        disabled={!member.mobile}
+                      >
+                        <CallIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleWhatsApp(member.mobile)}
+                        sx={{
+                          border: 1,
+                          borderColor: '#25D366',
+                          color: '#25D366',
+                          '&:hover': {
+                            backgroundColor: '#25D366',
+                            color: 'white'
+                          }
+                        }}
+                        disabled={!member.mobile}
+                      >
+                        <WhatsAppIcon fontSize="small" />
+                      </IconButton>
                     </Box>
                   </Box>
-
-                  {/* Action Buttons */}
-                  <Box sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'column' }, gap: 1, flexShrink: 0 }}>
-                    <IconButton 
-                      color="primary" 
-                      onClick={() => handleCall(member.mobile)}
-                      sx={{ border: 1, borderColor: 'primary.main' }}
-                      disabled={!member.mobile}
-                    >
-                      <CallIcon />
-                    </IconButton>
-                    <IconButton 
-                      color="success" 
-                      onClick={() => handleWhatsApp(member.mobile)}
-                      sx={{ border: 1, borderColor: 'success.main' }}
-                      disabled={!member.mobile}
-                    >
-                      <WhatsAppIcon />
-                    </IconButton>
-                  </Box>
-                </Box>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </Stack>
         )}
 
-        {/* Summary Stats */}
-        <Card sx={{ mt: 3, boxShadow: 2 }}>
-          <CardContent sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                Level {level} Summary
-              </Typography>
-              {usingFallback && (
-                <Chip label="Sample Statistics" size="small" color="warning" />
-              )}
-            </Box>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' }, gap: 2 }}>
-              <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'primary.50', borderRadius: 2 }}>
-                <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                  {teamMembers.length}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Total Members
-                </Typography>
-              </Box>
-              
-              <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'success.50', borderRadius: 2 }}>
-                <Typography variant="h4" sx={{ fontWeight: 700, color: 'success.main' }}>
-                  {teamMembers.filter(m => m.plan).length}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Active Members
-                </Typography>
-              </Box>
-              
-              <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'warning.50', borderRadius: 2 }}>
-                <Typography variant="h4" sx={{ fontWeight: 700, color: 'warning.main' }}>
-                  {teamMembers.filter(m => !m.plan).length}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Inactive Members
-                </Typography>
-              </Box>
-            </Box>
-            
-            {usingFallback && (
-              <Box sx={{ mt: 2, textAlign: 'center' }}>
-                <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic' }}>
-                  These statistics are based on demonstration data
-                </Typography>
-              </Box>
-            )}
-          </CardContent>
-        </Card>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
+              size="small"
+              sx={{
+                '& .MuiPaginationItem-root': {
+                  color: '#8B4513',
+                  border: '1px solid #FFD700',
+                  fontSize: '0.8rem',
+                  minWidth: 32,
+                  height: 32,
+                  '&.Mui-selected': {
+                    backgroundColor: '#FFD700',
+                    color: '#8B4513',
+                    fontWeight: 'bold'
+                  }
+                }
+              }}
+            />
+          </Box>
+        )}
+
+
+        {/* Summary Stats - Compact Version */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            gap: 1.5,
+            width: '100%',
+            mt:2
+          }}
+        >
+          {/* Total Members */}
+          <Box
+            sx={{
+              flex: 1,
+              minWidth: { xs: '100%', sm: '32%' },
+              textAlign: 'center',
+              p: 1.5,
+              background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+              borderRadius: 2,
+              boxShadow: 1,
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#8B4513', lineHeight: 1.2 }}>
+              {teamMembers.length}
+            </Typography>
+            <Typography variant="caption" sx={{ color: '#8B4513' }}>
+              Total Members
+            </Typography>
+          </Box>
+
+          {/* Active Members */}
+          <Box
+            sx={{
+              flex: 1,
+              minWidth: { xs: '100%', sm: '32%' },
+              textAlign: 'center',
+              p: 1.5,
+              background: 'linear-gradient(135deg, #90EE90 0%, #32CD32 100%)',
+              borderRadius: 2,
+              boxShadow: 1,
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#8B4513', lineHeight: 1.2 }}>
+              {teamMembers.filter(m => getPlanName(m.plan)).length}
+            </Typography>
+            <Typography variant="caption" sx={{ color: '#8B4513' }}>
+              Active Members
+            </Typography>
+          </Box>
+
+          {/* Inactive Members */}
+          <Box
+            sx={{
+              flex: 1,
+              minWidth: { xs: '100%', sm: '32%' },
+              textAlign: 'center',
+              p: 1.5,
+              background: 'linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%)',
+              borderRadius: 2,
+              boxShadow: 1,
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#8B4513', lineHeight: 1.2 }}>
+              {teamMembers.filter(m => !getPlanName(m.plan)).length}
+            </Typography>
+            <Typography variant="caption" sx={{ color: '#8B4513' }}>
+              Inactive Members
+            </Typography>
+          </Box>
+        </Box>
       </Container>
     </Box>
   );
