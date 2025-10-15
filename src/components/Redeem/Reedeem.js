@@ -272,7 +272,7 @@ const RedeemScreen = ({ isFromEwallet = false }) => {
           {/* Left: Redeem Section */}
           <Grid item xs={12} md={6} sx={{ display: "flex", flexDirection: "column" }}>
             {/* Daily Bonus */}
-            {/* <Card sx={{ mb: 3, p: 2 }}>
+            <Card sx={{ mb: 3, p: 2 }}>
               <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
                 Daily Bonus Points
               </Typography>
@@ -284,21 +284,21 @@ const RedeemScreen = ({ isFromEwallet = false }) => {
                   return (
                     <Box key={key} sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                       <Typography>₹{value.toFixed(2)}</Typography>
-                      <Button
+                      {/* <Button
                         variant="contained"
                         disabled={!canRedeem}
                         onClick={() => openRedeemDialog("daily", key, value)}
                       >
                         Redeem Now
-                      </Button>
+                      </Button> */}
                     </Box>
                   );
                 })
               )}
-            </Card> */}
+            </Card>
 
             {/* Profit Bonus */}
-            {/* <Card sx={{ mb: 3, p: 2 }}>
+            <Card sx={{ mb: 3, p: 2 }}>
               <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
                 Daily Profit Bonus Points
               </Typography>
@@ -321,7 +321,7 @@ const RedeemScreen = ({ isFromEwallet = false }) => {
                   );
                 })
               )}
-            </Card> */}
+            </Card>
 
             {/* Referral Bonus */}
             <Card sx={{ mb: 3, p: 2 }}>

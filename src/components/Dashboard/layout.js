@@ -43,17 +43,17 @@ const drawerWidth = 200;
 let menuArray = [
   { redirect: 'dashboard', name: 'Dashboard', parent: 'dashboard', icon: <DashboardIcon sx={{ fontSize: 20 }} /> },
    { redirect: 'income-passbook', name: 'Income Passbook', parent: 'income-passbook', icon: <ReceiptIcon sx={{ fontSize: 20 }} /> },
-  { redirect: 'add-money', name: 'Add Money', parent: 'add-money', icon: <AccountBalanceWalletIcon sx={{ fontSize: 20 }} /> },
+  // { redirect: 'add-money', name: 'Add Money', parent: 'add-money', icon: <AccountBalanceWalletIcon sx={{ fontSize: 20 }} /> },
   { redirect: 'redeem', name: 'Redeem', parent: 'redeem', icon: <PaymentIcon sx={{ fontSize: 20 }} /> },
-  { redirect: 'api-documentation', name: 'API Document', parent: 'api-documentation', icon: <WidgetsIcon sx={{ fontSize: 20 }} /> },
+  // { redirect: 'api-documentation', name: 'API Document', parent: 'api-documentation', icon: <WidgetsIcon sx={{ fontSize: 20 }} /> },
   { redirect: 'id-activation', name: 'ID Activation', parent: 'id-activation', icon: <PeopleIcon sx={{ fontSize: 20 }} /> },
   { redirect: 'business', name: 'business', parent: 'business', icon: <PeopleIcon sx={{ fontSize: 20 }} /> },
-  // { redirect: '#', name: 'Wallet', parent: 'wallet', icon: <AccountBalanceWalletIcon sx={{ fontSize: 20 }} /> },
-  // { redirect: '#', name: 'Marketing', parent: 'marketing', icon: <CampaignIcon sx={{ fontSize: 20 }} /> },
+  { redirect: 'meeting-screen', name: 'meeting screen', parent: 'meeting-screen', icon: <AccountBalanceWalletIcon sx={{ fontSize: 20 }} /> },
+  { redirect: 'courses-screen', name: 'courses screen', parent: 'courses-screen', icon: <CampaignIcon sx={{ fontSize: 20 }} /> },
   // { redirect: '#', name: 'Recharge/Payment', parent: 'recharge', icon: <PaymentIcon sx={{ fontSize: 20 }} /> },
   // { redirect: '#', name: 'Staff', parent: 'staff', icon: <PeopleIcon sx={{ fontSize: 20 }} /> },
   // { redirect: '#', name: 'Investment', parent: 'investment', icon: <TrendingUpIcon sx={{ fontSize: 20 }} /> },
-  { redirect: '#', name: 'Settings', parent: 'setting', icon: <SettingsIcon sx={{ fontSize: 20 }} /> }
+  // { redirect: '#', name: 'Settings', parent: 'setting', icon: <SettingsIcon sx={{ fontSize: 20 }} /> }
 ];
 
 let menuArray1 = [

@@ -431,10 +431,10 @@ const BusinessDashboardScreen = () => {
       'total-withdraw': '/redeem',
       'total-team': '/prime-team/3',
       'active-team': '/prime-team/4',
-      'self-reward': '/rewards',
-      'salary-reward': '/salary',
-      'level-reward': '/level-rewards',
-      'upgrade-reward': '/upgrade-rewards'
+      'self-reward': '/income-passbook',
+      'salary-reward': '/income-passbook',
+      'level-reward': '/income-passbook',
+      'upgrade-reward': '/income-passbook'
     };
     
     if (routes[cardType]) {
@@ -508,7 +508,7 @@ const BusinessDashboardScreen = () => {
       >
         <CircularProgress sx={{ color: goldenTheme.primary }} />
         <Typography variant="h6" sx={{ ml: 2, color: goldenTheme.darkGold, fontWeight: 600 }}>
-          Loading Dashboard...
+          Loading Business...
         </Typography>
       </Box>
     );
@@ -584,6 +584,22 @@ const BusinessDashboardScreen = () => {
       }}>
         <CardContent sx={{ p: isMobile ? 2 : 3 }}>
           <Grid container spacing={2} alignItems="center">
+             <Grid item xs={4} sm={3}>
+              <Avatar
+                sx={{
+                  width: isMobile ? 70 : 80,
+                  height: isMobile ? 70 : 80,
+                  mx: 'auto',
+                  background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+                  fontSize: isMobile ? '1.5rem' : '1.75rem',
+                  fontWeight: 'bold',
+                  color: '#8B4513',
+                  border: '3px solid #FFA500'
+                }}
+              >
+                {(userProfile?.name || 'U').charAt(0).toUpperCase()}
+              </Avatar>
+            </Grid>
             <Grid item xs={8} sm={9}>
               <Stack spacing={1.5}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -612,22 +628,7 @@ const BusinessDashboardScreen = () => {
                 </Box>
               </Stack>
             </Grid>
-            <Grid item xs={4} sm={3}>
-              <Avatar
-                sx={{
-                  width: isMobile ? 70 : 80,
-                  height: isMobile ? 70 : 80,
-                  mx: 'auto',
-                  background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                  fontSize: isMobile ? '1.5rem' : '1.75rem',
-                  fontWeight: 'bold',
-                  color: '#8B4513',
-                  border: '3px solid #FFA500'
-                }}
-              >
-                {(userProfile?.name || 'U').charAt(0).toUpperCase()}
-              </Avatar>
-            </Grid>
+           
           </Grid>
         </CardContent>
       </Card>

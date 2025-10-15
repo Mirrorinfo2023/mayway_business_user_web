@@ -34,7 +34,8 @@ import axios from 'axios';
 import { mt } from 'date-fns/locale';
 import API from "../../../utils/api"
 import { DataEncrypt, DataDecrypt } from "../../../utils/encryption"; // adjust path
-
+import WalletBalanceWidget from './wallet_ballance';
+import TodaysUpdates from '../Dashboard/User/todaysupdate';
 // Summary Cards Component
 const SummaryCards = ({ incomeStats }) => {
   const cards = [
@@ -116,10 +117,10 @@ const SummaryCards = ({ incomeStats }) => {
             <CardContent sx={{ p: 2, height: '100%', '&:last-child': { pb: 2 } }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '100%' }}>
                 <Box sx={{ ml: 0.5 }}>
-                  <Typography className="card-title" variant="subtitle2" sx={{ 
-                    fontWeight: 600, 
-                    color: card.color, 
-                    fontSize: '1rem', 
+                  <Typography className="card-title" variant="subtitle2" sx={{
+                    fontWeight: 600,
+                    color: card.color,
+                    fontSize: '1rem',
                     mb: 0.5,
                     transition: 'color 0.3s ease'
                   }}>
@@ -801,6 +802,8 @@ const Dashboard = () => {
           </Alert>
         )}
 
+        <WalletBalanceWidget />
+        <TodaysUpdates />
         {/* Summary Cards */}
         <SummaryCards incomeStats={dashboardData?.incomeStats} />
 
